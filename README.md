@@ -17,7 +17,15 @@ Sparse-V is a highly efficient hardware accelerator designed for TinyML applicat
 * **Verification:** Vivado 2025.1 Simulator & Python (NumPy/TensorFlow)
 * **Synthesis:** Xilinx Vivado (Target: Artix-7 / Zynq-7000)
 
-## 📂 Repository Structure
+## 🏗️ Architecture
+The design consists of a Systolic Array-like structure where 4 Processing Elements (PEs) operate in parallel. Each PE handles a specific row of the weight matrix, utilizing **indirect indexing** to fetch activations based on sparsity metadata.
+
+## 📈 Verification Results
+Functionality was verified by comparing hardware simulation outputs against a Golden Reference Model in Python.
+* **Input:** Random INT8 vectors
+* **Weights:** 2:4 Pruned & Quantized Matrix
+* **Result:** Exact match with software calculated dot products.
+
 
 ## 📂 Repository Structure
 
@@ -36,12 +44,4 @@ Sparse-V-Accelerator/
 │   └── sparsity_generator.py # Python script for pruning & packing
 └── README.md               # Project Documentation
 
-```text
-## 🏗️ Architecture
-The design consists of a Systolic Array-like structure where 4 Processing Elements (PEs) operate in parallel. Each PE handles a specific row of the weight matrix, utilizing **indirect indexing** to fetch activations based on sparsity metadata.
 
-## 📈 Verification Results
-Functionality was verified by comparing hardware simulation outputs against a Golden Reference Model in Python.
-* **Input:** Random INT8 vectors
-* **Weights:** 2:4 Pruned & Quantized Matrix
-* **Result:** Exact match with software calculated dot products.
