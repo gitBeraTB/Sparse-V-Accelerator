@@ -34,6 +34,7 @@ Sparse-V-Accelerator/
 │   └── sparsity_generator.py # Python script for pruning & packing
 └── README.md               # Project Documentation
 
+
 ## 🏗️ Architecture
 The design consists of a Systolic Array-like structure where 4 Processing Elements (PEs) operate in parallel. Each PE handles a specific row of the weight matrix, utilizing **indirect indexing** to fetch activations based on sparsity metadata.
 
