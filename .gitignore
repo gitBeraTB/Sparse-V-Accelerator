@@ -1,0 +1,16 @@
+
+*.log
+*.jou
+*.pb
+*.wdb
+*.str
+*.os
+.Xil/
+xsim.dir/
+*.jou
+webtalk*
+
+__pycache__/
+*.pyc
+
+.vscode/
