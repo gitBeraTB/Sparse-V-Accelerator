@@ -19,35 +19,38 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+// File: sparse_core.sv
+// Description: Core module implementing a systolic-like array of 4 Processing Elements.
+//              Handles parallel processing of 4 rows of the weight matrix.
+
 `include "sparse_pkg.sv"
 
 module sparse_core (
-    input  logic clk,
-    input  logic rst_n,
-    input  logic en,
+    input  logic                      clk,      // System Clock
+    input  logic                      rst_n,    // Active-Low Reset
+    input  logic                      en,       // Core Enable Signal
     
-    // 4 Satırlık Ağırlık Verisi (Her satır için bir paket)
-    // Python çıktısındaki 4 satırı buraya besleyeceğiz
-    input  sparse_pkg::sparse_packet_t w_rows [0:3], 
+    // Weight Memory Interface (Input for 4 rows)
+    input  sparse_pkg::sparse_packet_t w_rows [0:3],
     
-    // Tek bir Giriş Vektörü (4 PE'ye de aynı veri gider - Broadcast)
+    // Broadcast Input Vector (Sent to all PEs)
     input  sparse_pkg::activation_vec_t act_vec,
     
-    // 4 adet Çıkış (Sütun Sonucu)
-    output logic signed [19:0] psum_out [0:3]
+    // Output Interface (Partial Sums for each row)
+    output logic signed [19:0]        psum_out [0:3]
 );
-    
-    // 4 adet PE'yi oluştur (Parallel Processing)
+    // --- PE Instantiation ---
+    // Generate 4 Parallel Processing Elements
     genvar i;
     generate
-        for (i = 0; i < 4; i++) begin : gen_pe_array
+        for (i = 0; i < 4; i++) begin : pe_array
             sparse_processing u_pe (
-                .clk     (clk),
-                .rst_n   (rst_n),
-                .en      (en),
-                .w_pkt   (w_rows[i]), // Her PE kendi satırını alır
-                .act_vec (act_vec),   // Hepsi aynı girişi alır
-                .psum    (psum_out[i])
+                .clk      (clk),
+                .rst_n    (rst_n),
+                .en       (en),
+                .w_in     (w_rows[i]), // Unique weight row for each PE
+                .act_vec  (act_vec),   // Shared input vector
+                .psum_out (psum_out[i])// Unique output for each PE
             );
         end
     endgenerate

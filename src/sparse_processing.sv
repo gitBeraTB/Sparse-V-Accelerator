@@ -20,53 +20,54 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-`include "sparse_pkg.sv" // Paketi dahil et
+// File: sparse_pe.sv
+// Description: Processing Element (PE) logic for Structured Sparsity.
+//              Performs Multiply-Accumulate (MAC) operations using indirect indexing.
+
+`include "sparse_pkg.sv"
 
 module sparse_processing (
-    input  logic             clk,
-    input  logic             rst_n,
-    input  logic             en,      // Enable sinyali
-    
-    // Paket (Pkg) dosyasındaki özel tipleri kullanıyoruz
-    input  sparse_pkg::sparse_packet_t  w_pkt,   // Sıkıştırılmış Ağırlıklar + İndeksler
-    input  sparse_pkg::activation_vec_t act_vec, // 4 tane giriş verisi (Dense)
-    
-    output logic signed [19:0] psum   // Partial Sum (Taşmayı önlemek için geniş)
+    input  logic                      clk,      // System Clock
+    input  logic                      rst_n,    // Active-Low Reset
+    input  logic                      en,       // Enable Signal
+    input  sparse_pkg::sparse_packet_t w_in,    // Compressed Weight Packet Input
+    input  sparse_pkg::activation_vec_t act_vec,// Full Input Activation Vector
+    output logic signed [19:0]        psum_out  // Partial Sum Output
 );
-    // Paketi import et ki içindeki parametrelere erişebilelim
-    import sparse_pkg::*; 
+    // Import package for easy access to types
+    import sparse_pkg::*;
 
-    // Ara sinyaller (Signed işlem yapmak kritik!)
-    logic signed [DATA_WIDTH-1:0] op_w0, op_w1;
-    logic signed [DATA_WIDTH-1:0] op_a0, op_a1;
-    logic signed [2*DATA_WIDTH:0] mult0, mult1; // Çarpım sonucu 16-bit + 1 sign
+    // --- Internal Signals ---
+    logic signed [DATA_WIDTH-1:0] op_a_0, op_a_1; // Selected Activations
+    logic signed [DATA_WIDTH-1:0] op_w_0, op_w_1; // Weights
+    
+    // Intermediate multiplication results
+    logic signed [19:0] mult_0;
+    logic signed [19:0] mult_1;
 
-    // 1. AŞAMA: OPERAND SEÇİMİ (Multiplexer Logic)
-    // İndeksler (idx_0, idx_1) mux'ları kontrol eder.
+    // --- Combinational Logic: Indirect Indexing ---
+    // Selects the correct input activation based on the sparsity index stored in the weight packet.
     always_comb begin
-        // Ağırlıkları paket içinden çıkar
-        op_w0 = signed'(w_pkt.val_0);
-        op_w1 = signed'(w_pkt.val_1);
+        // MUX 1: Select activation for the first non-zero weight
+        op_a_0 = act_vec[w_in.idx_0];
+        op_w_0 = signed'(w_in.val_0);
 
-        // İndekse göre doğru aktivasyonu seç (Sparse Logic)
-        // Eğer idx_0 = 2 ise, act_vec[2] seçilir. Sıfır olanlar hiç işlenmez.
-        op_a0 = signed'(act_vec[w_pkt.idx_0]);
-        op_a1 = signed'(act_vec[w_pkt.idx_1]);
+        // MUX 2: Select activation for the second non-zero weight
+        op_a_1 = act_vec[w_in.idx_1];
+        op_w_1 = signed'(w_in.val_1);
+        
+        // Parallel Multiplication (Combinational)
+        mult_0 = op_a_0 * op_w_0;
+        mult_1 = op_a_1 * op_w_1;
     end
 
-    // 2. AŞAMA: ARİTMETİK İŞLEM (Sequential Logic)
+    // --- Sequential Logic: Accumulation ---
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            psum  <= '0;
-            mult0 <= '0;
-            mult1 <= '0;
+            psum_out <= 0;
         end else if (en) begin
-            // Çarpmaları yap
-            mult0 <= op_w0 * op_a0;
-            mult1 <= op_w1 * op_a1;
-            
-            // Topla (Adder Tree)
-            psum  <= mult0 + mult1;
+            // Accumulate the results of the two parallel multiplications
+            psum_out <= psum_out + mult_0 + mult_1;
         end
     end
 

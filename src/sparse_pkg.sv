@@ -18,26 +18,29 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
+// File: sparse_pkg.sv
+// Description: Global type definitions and structs for the Sparse Accelerator IP.
+//              Defines the data widths, weight packet structures, and vector types.
+
 package sparse_pkg;
 
-    // Veri genişlikleri
-    parameter int DATA_WIDTH = 8;  // INT8 Quantization
-    parameter int IDX_WIDTH  = 2;  // 4 elemanlı blok için 2-bit indeks yeterli
-    parameter int BLOCK_SIZE = 4;  // 4'lü bloklar (2:4 Sparsity)
+    // --- Configuration Parameters ---
+    parameter int DATA_WIDTH = 8;   // Input/Weight bit-width (INT8)
+    parameter int PSUM_WIDTH = 20;  // Accumulator bit-width (to prevent overflow)
+    parameter int IDX_WIDTH  = 2;   // Index width for 2:4 sparsity (2 bits)
 
-    // Kullanıcı tanımlı türler (Struct)
-    
-    // Sıkıştırılmış Ağırlık Çifti (Bir PE'ye giren veri)
-    // Donanım belleğinden tek seferde bu paketi okuyacağız.
+    // --- Type Definitions ---
+
+    // Structure for a compressed weight packet (2 Non-Zero values + 2 Indices)
+    // This represents a compressed block from a 4-element row.
     typedef struct packed {
-        logic [DATA_WIDTH-1:0] val_0; // 1. Non-zero değer
-        logic [DATA_WIDTH-1:0] val_1; // 2. Non-zero değer
-        logic [IDX_WIDTH-1:0]  idx_0; // 1. Değerin konumu
-        logic [IDX_WIDTH-1:0]  idx_1; // 2. Değerin konumu
+        logic [DATA_WIDTH-1:0] val_0; // First Non-Zero Value
+        logic [DATA_WIDTH-1:0] val_1; // Second Non-Zero Value
+        logic [IDX_WIDTH-1:0]  idx_0; // Index of the first value (0-3)
+        logic [IDX_WIDTH-1:0]  idx_1; // Index of the second value (0-3)
     } sparse_packet_t;
 
-    // Aktivasyon Vektörü (Düzgün/Dense veri)
-    // İşlemciye giren 4 adet giriş verisi
-    typedef logic [DATA_WIDTH-1:0] activation_vec_t [0:BLOCK_SIZE-1];
+    // Array type for the Input Activation Vector (4 elements)
+    typedef logic signed [DATA_WIDTH-1:0] activation_vec_t [0:3];
 
 endpackage
