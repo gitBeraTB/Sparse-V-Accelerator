@@ -20,11 +20,27 @@ Sparse-V is a highly efficient hardware accelerator designed for TinyML applicat
 ## 🏗️ Architecture
 The design consists of a Systolic Array-like structure where 4 Processing Elements (PEs) operate in parallel. Each PE handles a specific row of the weight matrix, utilizing **indirect indexing** to fetch activations based on sparsity metadata.
 
-## 📈 Verification Results
-Functionality was verified by comparing hardware simulation outputs against a Golden Reference Model in Python.
-* **Input:** Random INT8 vectors
-* **Weights:** 2:4 Pruned & Quantized Matrix
-* **Result:** Exact match with software calculated dot products.
+## ✅ Verification Results (Real-World AI Workload)
+The hardware core was tested against a **Scikit-Learn MNIST Digit Recognition** model.
+The simulation verified **Bit-Exact Accuracy** with the software model using 2:4 Structured Sparsity and INT8 Quantization.
+
+| Feature | Specification | Status |
+| :--- | :--- | :--- |
+| **Workload** | MNIST Digit Classification Layer | ✅ Verified |
+| **Input Data** | Real Handwritten Digit Pixel Vectors | ✅ Verified |
+| **Arithmetic** | Signed INT8 (Two's Complement) | ✅ Verified |
+| **Accuracy** | 100% Match with Python Reference | ✅ Verified |
+
+### Simulation Output Log
+```text
+-> Writing Input Vectors (Real MNIST Data)...
+-> Starting Core...
+-> Reading Results...
+Read Address: 0x14, Data:   1384 (Match)
+Read Address: 0x18, Data:  -4224 (Match)
+Read Address: 0x1c, Data:  -4682 (Match)
+Read Address: 0x20, Data: -10058 (Match)
+Hardware Latency: ~14 Cycles
 
 
 ## 📂 Repository Structure
