@@ -22,6 +22,29 @@
 
 // Dosya: tb_axi_sparse_wrapper.sv
 `timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 01/25/2026 02:56:49 PM
+// Design Name: 
+// Module Name: tb_axi_sparse_wrapper
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+// Dosya: tb_axi_sparse_wrapper.sv
+`timescale 1ns / 1ps
 
 module tb_axi_sparse_wrapper;
 
@@ -154,10 +177,10 @@ module tb_axi_sparse_wrapper;
         // İşlemci sırayla 0x04, 0x08, 0x0C, 0x10 adreslerine yazıyor.
         // Hepsi 10 olsun.
         $display("-> Writing Input Vectors...");
-        axi_write(6'h04, 32'd10);
-        axi_write(6'h08, 32'd10);
-        axi_write(6'h0C, 32'd10);
-        axi_write(6'h10, 32'd10);
+        axi_write(6'h04, -58);
+        axi_write(6'h08, -64);
+        axi_write(6'h0C, -28);
+        axi_write(6'h10, -6);
 
         $display("--- Performance Test Begins ---");
 
@@ -170,7 +193,7 @@ module tb_axi_sparse_wrapper;
         axi_write(6'h00, 32'd1);
 
         // 3. Hesaplama için bekle
-        #50;
+       #100;
         end_time = cycle_count;
         latency_cycles = end_time - start_time;
 
@@ -179,12 +202,13 @@ module tb_axi_sparse_wrapper;
         // 4. Sonuçları Oku (Reading Results)
         // 0x14, 0x18, 0x1C, 0x20 adreslerinden oku.
         $display("-> Reading Results...");
-        axi_read(6'h14); // Row 0 -> Beklenen: 210
-        axi_read(6'h18); // Row 1 -> Beklenen: 240
-        axi_read(6'h1C); // Row 2 -> Beklenen: -100
-        axi_read(6'h20); // Row 3 -> Beklenen: -360
+        axi_read(6'h14); // Beklenen:  1384
+        axi_read(6'h18); // Beklenen: -4224
+        axi_read(6'h1C); // Beklenen: -4682
+        axi_read(6'h20); // Beklenen: -10058
 
-        $display("--- SİMÜLASYON BİTTİ ---");
+        $display("Hardware Latency: ~%0d Cycles", (end_time - start_time));
+        $display("--- SIMULATION FINISHED ---");
         #20 $finish;
     end
 

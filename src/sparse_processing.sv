@@ -67,7 +67,7 @@ module sparse_processing (
             psum_out <= 0;
         end else if (en) begin
             // Accumulate the results of the two parallel multiplications
-            psum_out <= psum_out + mult_0 + mult_1;
+            psum_out <= mult_0 + mult_1;
         end
     end
 

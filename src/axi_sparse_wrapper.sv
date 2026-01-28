@@ -136,7 +136,7 @@ module axi_sparse_wrapper # (
     // -------------------------------------------------------------------------
     // 2. CORE CONTROL LOGIC (Simple FSM)
     // -------------------------------------------------------------------------
-    assign core_start = reg_ctrl[0]; // Start bit from CPU
+   assign core_start = reg_ctrl[0]; // Start bit from CPU
 
     always_ff @(posedge aclk or negedge aresetn) begin
         if (!aresetn) begin
@@ -150,16 +150,18 @@ module axi_sparse_wrapper # (
                     operation_done <= 0;
                     if (core_start) begin
                         current_state <= COMPUTE;
-                        core_en <= 1;
+                        core_en <= 1; // Motoru çalıştır (Sadece 1 cycle)
                         latency_counter <= 0;
                     end
                 end
 
                 COMPUTE: begin
-                    // Simulate processing latency (9 cycles for demo)
+                    core_en <= 0; // <--- KRİTİK HAMLE: Enable'ı hemen kapat!
+                    // Böylece PE sadece 1 kez toplama yapar, sonra sonucu tutar.
+                    
+                    // Yine de işlemciyi "işim bitmedi" diye bekletmeye devam et (Latency Simülasyonu)
                     if (latency_counter >= 9) begin
                         current_state <= DONE;
-                        core_en <= 0;
                     end else begin
                         latency_counter <= latency_counter + 1;
                     end
