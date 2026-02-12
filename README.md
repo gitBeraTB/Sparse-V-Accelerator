@@ -1,9 +1,9 @@
 # Sparse-V: RISC-V Integrated Structured Sparsity Accelerator
 
-## 🚀 Overview
+##  Overview
 Sparse-V is a highly efficient hardware accelerator designed for TinyML applications on edge devices. It leverages **2:4 Structured Sparsity** to skip redundant computations (zero-valued weights), delivering high-performance matrix multiplication with minimal silicon area usage. The IP is wrapped with an **AXI4-Lite** interface, making it plug-and-play compatible with RISC-V processors (e.g., Ibex, CV32E40P).
 
-## 📊 Key Performance Metrics
+##  Key Performance Metrics
 | Metric | Baseline (RISC-V CPU) | Sparse-V (This Work) | Improvement |
 | :--- | :--- | :--- | :--- |
 | **Latency (4x4 Matrix)** | ~128 Cycles | **9 Cycles** | **14.2x Speedup** 🚀 |
@@ -17,10 +17,10 @@ Sparse-V is a highly efficient hardware accelerator designed for TinyML applicat
 * **Verification:** Vivado 2025.1 Simulator & Python (NumPy/TensorFlow)
 * **Synthesis:** Xilinx Vivado (Target: Artix-7 / Zynq-7000)
 
-## 🏗️ Architecture
+##  Architecture
 The design consists of a Systolic Array-like structure where 4 Processing Elements (PEs) operate in parallel. Each PE handles a specific row of the weight matrix, utilizing **indirect indexing** to fetch activations based on sparsity metadata.
 
-## ✅ Verification Results (Real-World AI Workload)
+##  Verification Results (Real-World AI Workload)
 The hardware core was tested against a **Scikit-Learn MNIST Digit Recognition** model.
 The simulation verified **Bit-Exact Accuracy** with the software model using 2:4 Structured Sparsity and INT8 Quantization.
 
@@ -43,7 +43,7 @@ Read Address: 0x20, Data: -10058 (Match)
 Hardware Latency: ~14 Cycles
 
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 Sparse-V-Accelerator/
