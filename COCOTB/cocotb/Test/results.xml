@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1770930047" />
+    <testcase name="test_sparse_inference_engine" classname="test_engine" file="/Users/berathmac/Documents/RISC-V/Sparse-V-Accelerator/COCOTB/cocotb/Test/test_engine.py" lineno="15" time="3.105180025100708" sim_time_ns="6000.0" ratio_time="1932.2551193486458" />
+  </testsuite>
+</testsuites>

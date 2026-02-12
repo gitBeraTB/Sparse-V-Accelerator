@@ -22,25 +22,29 @@
 // Description: Global type definitions and structs for the Sparse Accelerator IP.
 //              Defines the data widths, weight packet structures, and vector types.
 
+`timescale 1ns / 1ps
+
 package sparse_pkg;
 
-    // --- Configuration Parameters ---
-    parameter int DATA_WIDTH = 8;   // Input/Weight bit-width (INT8)
-    parameter int PSUM_WIDTH = 20;  // Accumulator bit-width (to prevent overflow)
-    parameter int IDX_WIDTH  = 2;   // Index width for 2:4 sparsity (2 bits)
+    // Parametreleri 'localparam' yaptık, derleyici için daha nettir.
+    localparam DATA_WIDTH = 8;
+    localparam PSUM_WIDTH = 20;
+    localparam IDX_WIDTH  = 2;
 
-    // --- Type Definitions ---
-
-    // Structure for a compressed weight packet (2 Non-Zero values + 2 Indices)
-    // This represents a compressed block from a 4-element row.
+    // --- STRUCT TANIMI ---
+    // Burada parametre kullanmak yerine doğrudan sayıları (8 ve 2) yazdık.
+    // Bu, derleyicinin "DATA_WIDTH nedir?" diye kafasının karışmasını önler.
     typedef struct packed {
-        logic [DATA_WIDTH-1:0] val_0; // First Non-Zero Value
-        logic [DATA_WIDTH-1:0] val_1; // Second Non-Zero Value
-        logic [IDX_WIDTH-1:0]  idx_0; // Index of the first value (0-3)
-        logic [IDX_WIDTH-1:0]  idx_1; // Index of the second value (0-3)
+        logic [7:0] val_0; 
+        logic [7:0] val_1; 
+        logic [1:0] idx_0; 
+        logic [1:0] idx_1; 
     } sparse_packet_t;
 
-    // Array type for the Input Activation Vector (4 elements)
-    typedef logic signed [DATA_WIDTH-1:0] activation_vec_t [0:3];
+    // --- VEKTÖR TANIMI (DÜZELTİLMİŞ) ---
+    // 'signed' kelimesini şimdilik kaldırdık (gerekirse sonra ekleriz).
+    // [3:0][7:0] formatı: 4 tane 8-bitlik sayı.
+    // Bu format %100 SystemVerilog uyumludur ve Icarus sever.
+    typedef logic [3:0][7:0] activation_vec_t;
 
 endpackage
