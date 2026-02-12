@@ -27,9 +27,10 @@ jobs:
 
       - name: Run Simulation
         run: |
-          # DİKKAT: Ekran görüntüne göre Makefile dosyan 'COCOTB/cocotb/Test' içinde.
-          # Önce o klasöre gidiyoruz, sonra make çalıştırıyoruz.
           cd COCOTB/cocotb/Test
+          # Önce eski derlemeyi temizle (MacBook kalıntılarını sil)
+          make clean
+          # Sıfırdan derle ve çalıştır
           make
         env:
           SIM: icarus
