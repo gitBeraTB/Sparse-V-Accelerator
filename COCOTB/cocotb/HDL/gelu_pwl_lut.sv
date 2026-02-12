@@ -11,7 +11,7 @@ module gelu_pwl_lut (
     // --- 1. DOSYADAN OKUMA ---
      initial begin
         
-        $readmemh("/Users/berathmac/Documents/RISC-V/Sparse-V-Accelerator/COCOTB/cocotb/HDL/gelu_lut.mem", rom_memory);
+        $readmemh("../HDL/gelu_lut.mem", rom_memory);
 
         //$display("-----------------------------------------");
         //$display("GELU HAFIZA KONTROLU:");
